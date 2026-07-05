@@ -1,0 +1,10 @@
+# One seed URL per line. Lines starting with # are ignored.
+# Copy this file to `sources.txt` and replace with your organization's pages.
+# Keep the list tight to start (a handful of high-value pages), then expand.
+#
+# CRAWL_MAX_DEPTH (config.py) controls how many link-hops within the same domain
+# the crawler follows. Start at 0 (these pages only) to stay in control.
+
+https://www.example.org/about
+https://www.example.org/faq
+https://www.example.org/contact
