@@ -1,8 +1,3 @@
-"""Streamlit chat UI. Thin shell over the same rag/ interface as cli.py.
-
-Run:  streamlit run app.py
-Make sure you've run `python -m ingest.build_index` first."""
-
 import streamlit as st
 
 import config

@@ -1,10 +1,3 @@
-"""Reverse-HyDE enrichment. For each parent chunk, use the local LLM to generate
-a few hypothetical questions the chunk answers (embedded later so retrieval can
-match question-to-question) plus a one-line summary stored on the parent.
-
-Runs offline, so it adds zero query-time latency. Skipped entirely when
-USE_REVERSE_HYDE is false."""
-
 from langchain_core.documents import Document
 
 import config

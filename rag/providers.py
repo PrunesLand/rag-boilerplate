@@ -1,13 +1,3 @@
-"""Provider factory: build the LLM, embeddings, and vector store from config.
-
-This is the one place that knows about concrete providers. Everything else in
-rag/ and ingest/ depends only on the LangChain interfaces these return
-(BaseChatModel, Embeddings, VectorStore), so swapping a provider is a config
-change — no pipeline code changes.
-
-Imports are lazy: only the selected provider's package needs to be installed.
-Ollama + Chroma (the defaults) are the tested path; the others are drop-ins."""
-
 import config
 
 
@@ -26,7 +16,7 @@ def get_llm():
 
         return ChatOllama(
             model=config.LLM_MODEL,
-            base_url=config.OLLAMA_BASE_URL,
+            base_url=config.LLM_BASE_URL,
             temperature=config.LLM_TEMPERATURE,
         )
     if provider == "openai":
@@ -52,7 +42,7 @@ def get_embeddings():
     if provider == "ollama":
         from langchain_ollama import OllamaEmbeddings
 
-        return OllamaEmbeddings(model=config.EMBEDDING_MODEL, base_url=config.OLLAMA_BASE_URL)
+        return OllamaEmbeddings(model=config.EMBEDDING_MODEL, base_url=config.LLM_BASE_URL)
     if provider == "openai":
         try:
             from langchain_openai import OpenAIEmbeddings

@@ -1,11 +1,3 @@
-"""Offline quality harness. Runs the pipeline over eval/testset.jsonl and scores
-it with RAGAS, using the local Ollama models as both generator and judge.
-
-Run:  python -m eval.run_ragas
-
-RAGAS with a small local judge model is directional, not gospel — use it to
-compare config toggles against each other, not as an absolute grade."""
-
 import json
 import os
 
@@ -55,8 +47,8 @@ def main():
             faithfulness,
         )
 
-        judge = ChatOllama(model=config.LLM_MODEL, base_url=config.OLLAMA_BASE_URL)
-        embeddings = OllamaEmbeddings(model=config.EMBEDDING_MODEL, base_url=config.OLLAMA_BASE_URL)
+        judge = ChatOllama(model=config.LLM_MODEL, base_url=config.LLM_BASE_URL)
+        embeddings = OllamaEmbeddings(model=config.EMBEDDING_MODEL, base_url=config.LLM_BASE_URL)
         scores = evaluate(
             Dataset.from_list(rows),
             metrics=[faithfulness, answer_relevancy, context_precision],

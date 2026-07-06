@@ -1,7 +1,3 @@
-"""Crawl + clean stage. Fetch seed URLs (and same-domain links up to a depth),
-extract main-content text with trafilatura, and return clean LangChain Documents
-carrying url/title metadata."""
-
 from collections import deque
 from urllib.robotparser import RobotFileParser
 from urllib.parse import urljoin, urlparse

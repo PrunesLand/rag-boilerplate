@@ -1,9 +1,3 @@
-"""Terminal chat UI — the build-and-debug loop. Shares the same rag/ interface
-(load_stores + answer) that app.py will use.
-
-Run:  python cli.py
-Make sure you've run `python -m ingest.build_index` first."""
-
 import sys
 
 from rag.generate import answer

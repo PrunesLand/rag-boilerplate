@@ -1,16 +1,3 @@
-"""The single place that wires models and stores together.
-
-Delegates provider choice to rag/providers.py, then adds the two persisted
-stores the pipeline needs:
-  - vector store : child + hypothetical-question embeddings (match targets)
-  - docstore     : parent chunks keyed by parent_id (context sent to the LLM)
-
-Also persists the flat list of embedded child docs so BM25 keyword search works
-with ANY vector store provider (not just ones with a bulk .get()).
-
-Imported by ingest/build_index.py (to write) and rag/retrieve.py + eval (to read),
-so both sides wire everything identically."""
-
 import json
 import os
 

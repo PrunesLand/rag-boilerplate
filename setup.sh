@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# One-shot setup for the default (Ollama + Chroma) path.
+# Installs the Python environment and seeds config files. Does not provision a
+# model backend (Ollama, OpenAI, etc.) — see README.md > Manual setup for that.
 # Usage: ./setup.sh
 set -euo pipefail
 
@@ -8,22 +9,20 @@ python3 -m venv .venv
 .venv/bin/pip install --upgrade pip -q
 .venv/bin/pip install -r requirements.txt
 
-echo "==> Seeding config files"
-[ -f .env ] || { cp .env.example .env && echo "  created .env (edit ORGANIZATION_NAME)"; }
-[ -f sources.txt ] || { cp sources.txt.example sources.txt && echo "  created sources.txt (add your URLs)"; }
-
-if command -v ollama >/dev/null 2>&1; then
-  echo "==> Pulling default Ollama models"
-  ollama pull qwen2.5:0.5b-instruct
-  ollama pull nomic-embed-text
-else
-  echo "==> Ollama not found. Install from https://ollama.com then run:"
-  echo "     ollama pull qwen2.5:0.5b-instruct && ollama pull nomic-embed-text"
-  echo "   (Skip if you're using a cloud provider — set LLM_PROVIDER in .env.)"
-fi
+echo "==> Seeding secrets file"
+[ -f .env ] || { cp .env.example .env && echo "  created .env (fill in secrets for your chosen provider, if any)"; }
 
 echo ""
-echo "Done. Next:"
-echo "  1. Edit .env (ORGANIZATION_NAME) and sources.txt (your URLs)"
-echo "  2. make ingest      # build the index"
-echo "  3. make chat        # talk to it in the terminal"
+echo "Done. This script does not provision a model backend — that step is"
+echo "provider-specific. See README.md > Manual setup > Model backend and"
+echo "Swapping providers for what your chosen LLM_PROVIDER / EMBEDDING_PROVIDER"
+echo "requires (a local server + pulled weights, or an API key)."
+echo ""
+echo "Next:"
+echo "  1. Edit config.py (ORGANIZATION_NAME, provider selection, etc.)"
+echo "  2. Fill in .env with any provider secrets (API keys)"
+echo "  3. Create sources.txt and list your source URLs, one per line"
+echo "     (see sources.txt.example for the format)"
+echo "  4. Provision your model backend (see above)"
+echo "  5. make ingest      # build the index"
+echo "  6. make chat        # talk to it in the terminal"

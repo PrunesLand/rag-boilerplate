@@ -1,11 +1,3 @@
-"""Query-side orchestration:
-
-  expand -> hybrid retrieve (+RRF) -> CRAG relevance check -> rerank
-         -> Small2Big parent expansion
-
-Every stage is guarded by a config toggle so the pipeline degrades cleanly to a
-plain vector search when features are off. Returns parent Documents to generate."""
-
 import config
 from rag.expand import generate_variants, reciprocal_rank_fusion
 

@@ -1,94 +1,129 @@
 # Modular RAG Template
 
-A **fork-and-go RAG chatbot** that answers questions about *your* organization,
-grounded in its own web pages. Runs **fully local by default** (Ollama + Chroma) —
-no API keys, no data leaving your machine — and is **provider-agnostic**, so you
-can swap in OpenAI, Anthropic, or pgvector by changing one config value.
-
-Built as a reusable architecture project: clone it, point it at your URLs, and
-you have a grounded, cited chatbot. See [RAG_PLAN.md](RAG_PLAN.md) for the full
-architecture and the *why* behind each component.
-
-## Features
-
-- **Local-first** — Qwen via Ollama + Chroma out of the box; zero cloud cost.
-- **Provider-agnostic** — LLM, embeddings, and vector store are chosen from
-  config ([rag/providers.py](rag/providers.py)). Ollama/OpenAI/Anthropic +
-  Chroma/pgvector.
-- **Modular RAG** — every advanced feature is a toggle: hybrid search,
-  reranking, multi-query fusion, Small2Big chunking, Reverse-HyDE, CRAG.
-- **Grounded + cited** — answers only from your sources, with source URLs, and
-  an "I don't know" guardrail.
-- **Batteries included** — crawler (respects `robots.txt`), CLI + Streamlit UIs,
-  and a RAGAS evaluation harness.
+A reusable Retrieval Augmentation Generation (RAG) Architecture template complete with MLOps capabilities with LangChain. As businesses continue to take further interest in the deployment of Large Language Models (LLMs) in their business practices, there is a surging need for quick and quality deployment of such project. The aim of this repository is to provide organizations with a template of an end-to-end chatbot with interchangable components as according to technical requirements.
 
 ## Quickstart
 
 ```bash
-./setup.sh                      # venv + deps + pull models + seed config
-# edit .env  -> set ORGANIZATION_NAME
-# edit sources.txt -> your page URLs
-make ingest                     # crawl + build the index
-make chat                       # ask questions in the terminal
+./setup.sh                      # create venv, install deps, seed config files
+# provision your model backend — see Manual setup > Model backend below
+# edit config.py to set ORGANIZATION_NAME and any other settings
+# create sources.txt and list your page URLs, one per line
+make ingest                     # crawl sources and build the index
+make chat                       # query the assistant in the terminal
 ```
 
-Prefer a browser UI? `make ui` (Streamlit). Prefer manual steps? See below.
+A browser interface is available via `make ui` (Streamlit). Manual setup steps
+are described below.
 
 ## Manual setup
 
-1. **Ollama** running locally (for the default provider):
+1. **Model backend.** Provision the provider you intend to use for the LLM and
+   embeddings, then select it in [config.py](config.py). See
+   [Swapping providers](#swapping-providers) for the full list.
+   - *Local (default)* — install [Ollama](https://ollama.com) and pull the
+     models named in your config:
+     ```bash
+     ollama pull qwen2.5:0.5b-instruct
+     ollama pull nomic-embed-text
+     ```
+   - *Cloud* — obtain an API key for your chosen provider (e.g. OpenAI,
+     Anthropic); no local models are required. Keep the key as a secret — see
+     step 3.
+2. **Python 3.11+** dependencies: `pip install -r requirements.txt` (install any
+   optional provider package listed in `requirements.txt` for your backend).
+3. **Configuration.** How the project runs — provider selection, model names,
+   feature toggles, crawl behavior, and everything else in
+   [Key settings](#key-settings) — is set by editing [config.py](config.py)
+   directly.
+
+   Secrets (API keys, database connection strings) do not belong in
+   `config.py`. Supply them as environment variables instead: copy
+   `.env.example` to `.env`, fill in only the secrets your chosen providers
+   need, then load it into your shell before running anything:
    ```bash
-   ollama pull qwen2.5:0.5b-instruct
-   ollama pull nomic-embed-text
+   cp .env.example .env               # then fill in your secret values
+   set -a && source .env && set +a    # export every variable into the current shell
    ```
-   Or use a cloud provider instead — see *Swapping providers*.
-2. **Python 3.11+** deps: `pip install -r requirements.txt`
-3. **Configure**: copy `.env.example` → `.env`, set `ORGANIZATION_NAME`.
-4. **Sources**: copy `sources.txt.example` → `sources.txt`, add your URLs.
-5. **Build + run**: `python -m ingest.build_index` then `python cli.py`.
+   Repeat the `source` step in every new shell session (or add it to your shell
+   profile; [`direnv`](https://direnv.net/) can automate this per directory).
+   The `make` targets invoke Python directly, so source `.env` in the same
+   shell beforehand.
+4. **Sources.** Create a file named `sources.txt` in the project root and list
+   your source URLs, one per line (see `sources.txt.example` for the format).
+5. **Build and run**: `python -m ingest.build_index`, then `python cli.py`.
 
 ## Swapping providers
 
-Everything routes through [rag/providers.py](rag/providers.py). Change these in
-`.env` (and install the matching optional package from `requirements.txt`):
+All provider selection is routed through [rag/providers.py](rag/providers.py).
+Each of the three roles — generation, embeddings, and vector store — is chosen
+independently. Set the variables for your choice in the environment. The base
+LangChain stack is installed during setup (`pip install -r requirements.txt`);
+provider-specific packages such as `langchain-openai`, `langchain-anthropic`, and
+`langchain-postgres` are listed there as optional entries — uncomment the one for
+your provider before installing, or install it directly.
 
-| Goal | Set |
-|------|-----|
-| OpenAI for generation | `LLM_PROVIDER=openai`, `LLM_MODEL=gpt-4o-mini`, `OPENAI_API_KEY=…` |
-| OpenAI embeddings | `EMBEDDING_PROVIDER=openai`, `EMBEDDING_MODEL=text-embedding-3-small` |
-| Anthropic generation | `LLM_PROVIDER=anthropic`, `LLM_MODEL=claude-…`, `ANTHROPIC_API_KEY=…` |
-| Postgres/pgvector store | `VECTORSTORE_PROVIDER=pgvector`, `PGVECTOR_CONNECTION=…` |
+**Generation:** 
 
-> Changing `EMBEDDING_PROVIDER`/`EMBEDDING_MODEL` or the chunk sizes requires a
-> re-ingest (`make ingest`) — embeddings must be produced by the same model used
-> at query time.
+| Provider | Configuration |
+|----------|---------------|
+| Ollama | `LLM_PROVIDER=ollama`, `LLM_MODEL=qwen2.5:0.5b-instruct` |
+| OpenAI | `LLM_PROVIDER=openai`, `LLM_MODEL=gpt-4o-mini`, `OPENAI_API_KEY=…` |
+| Anthropic | `LLM_PROVIDER=anthropic`, `LLM_MODEL=claude-…`, `ANTHROPIC_API_KEY=…` |
 
-## How it fits together
+**Embeddings:** 
+
+| Provider | Configuration |
+|----------|---------------|
+| Ollama | `EMBEDDING_PROVIDER=ollama`, `EMBEDDING_MODEL=nomic-embed-text` |
+| OpenAI | `EMBEDDING_PROVIDER=openai`, `EMBEDDING_MODEL=text-embedding-3-small` |
+
+**Vector store:** 
+
+| Provider | Configuration |
+|----------|---------------|
+| Chroma | `VECTORSTORE_PROVIDER=chroma` (local, persisted to `chroma_db/`) |
+| pgvector | `VECTORSTORE_PROVIDER=pgvector`, `PGVECTOR_CONNECTION=…` |
+
+> Changing `EMBEDDING_PROVIDER`, `EMBEDDING_MODEL`, or the chunk sizes requires
+> re-ingestion (`make ingest`): embeddings must be produced by the same model
+> used at query time.
+
+## Architecture overview
 
 ```
-sources.txt ──> ingest/ ──> chroma_db/ + docstore/ <── rag/ <── cli.py / app.py
+sources.txt ──> ingest/ ──> vector store + docstore/ <── rag/ <── cli.py / app.py
                  (writes)                            (reads)
 ```
 
-- `ingest/` — fills the stores (crawl → chunk → enrich → build_index).
-- `rag/` — reads them per message (expand → retrieve → generate).
-- `config.py` — every model choice and feature toggle, in one place.
-- `rag/providers.py` — the only file that knows about concrete providers.
+- `ingest/` — populates the stores (crawl → chunk → enrich → build_index).
+- `rag/` — reads the stores per request (expand → retrieve → generate).
+- `config.py` — centralizes every model choice and feature toggle.
+- `rag/providers.py` — the sole module aware of concrete providers.
+- **Vector store** — holds the embedded child chunks; backend is chosen via
+  `VECTORSTORE_PROVIDER` (Chroma persists locally to `chroma_db/`; pgvector
+  lives in your Postgres instance). See [Swapping providers](#swapping-providers).
+- **`docstore/`** — holds the parent chunks for Small2Big expansion; always a
+  local, fixed implementation regardless of `VECTORSTORE_PROVIDER`.
 
 ## Configuration
 
-All settings live in [config.py](config.py) and are overridable via env / `.env`.
-Key ones:
+All behavioral settings live in [config.py](config.py) — edit it directly to
+change how the project runs. Secrets (API keys, connection strings) stay out of
+`config.py` and are supplied via environment variables instead; see
+[Manual setup](#manual-setup) step 3.
+
+### Key settings
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `ORGANIZATION_NAME` | Who the bot represents | `Your Organization` |
+| `ORGANIZATION_NAME` | Organization the assistant represents | `Your Organization` |
 | `ASSISTANT_DESCRIPTION` | Persona line in the system prompt | derived from name |
 | `LLM_PROVIDER` / `EMBEDDING_PROVIDER` / `VECTORSTORE_PROVIDER` | Engines | `ollama` / `ollama` / `chroma` |
 | `LLM_MODEL` / `EMBEDDING_MODEL` | Model names | `qwen2.5:0.5b-instruct` / `nomic-embed-text` |
 | `USE_HYBRID_SEARCH` / `USE_RERANKER` / `USE_MULTI_QUERY` / `USE_REVERSE_HYDE` | Feature toggles | `true` |
-| `USE_CRAG` | Self-grading (needs 7b+/cloud) | `false` |
-| `CRAWL_MAX_DEPTH` / `RESPECT_ROBOTS_TXT` | Crawl scope + politeness | `1` / `true` |
+| `USE_CRAG` | Self-grading (requires a 7B+ or cloud model) | `false` |
+| `CRAWL_MAX_DEPTH` / `RESPECT_ROBOTS_TXT` | Crawl scope and politeness | `1` / `true` |
 
 ## Make targets
 
@@ -96,4 +131,4 @@ Key ones:
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Fork it, adapt it, ship it.
+Released under the MIT License; see [LICENSE](LICENSE).

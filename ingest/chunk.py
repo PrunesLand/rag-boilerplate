@@ -1,7 +1,3 @@
-"""Small2Big chunking. Split each clean page into large PARENT chunks (context
-sent to the LLM), then split each parent into small CHILD chunks (precise match
-targets). Children carry a parent_id linking back to their parent."""
-
 import uuid
 
 from langchain_core.documents import Document

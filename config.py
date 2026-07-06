@@ -1,12 +1,5 @@
 import os
 
-try:  # optional: load a .env file if python-dotenv is installed
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except ImportError:
-    pass
-
 # ── Identity ──────────────────────────────────────────────────────────────────
 # Who the assistant is. Set these to make the bot yours — no code changes needed.
 ORGANIZATION_NAME = os.getenv("ORGANIZATION_NAME", "Your Organization")
@@ -32,7 +25,7 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "nomic-embed-text")
 LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.0"))
 
 # Provider connection details (only the selected provider's settings are used).
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://localhost:11434")
 # OPENAI_API_KEY / ANTHROPIC_API_KEY are read from the environment by the SDKs.
 
 # Local cross-encoder reranker (runs on CPU via sentence-transformers).

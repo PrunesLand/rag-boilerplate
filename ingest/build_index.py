@@ -1,10 +1,3 @@
-"""Ingestion entry point: crawl -> chunk (Small2Big) -> enrich (Reverse-HyDE)
--> embed children + question docs into the vector store, write parents to the
-docstore, and persist the child list for BM25.
-
-Run:  python -m ingest.build_index
-Re-run whenever your source pages change. Rebuilds all stores from scratch."""
-
 import shutil
 
 import config

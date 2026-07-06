@@ -1,8 +1,3 @@
-"""Generation stage + the public interface the front-ends use.
-
-answer(query, history, stores) runs the whole query pipeline, resolves sources,
-and returns an AnswerResult whose .tokens streams the reply as it generates."""
-
 from dataclasses import dataclass, field
 from typing import Iterator
 

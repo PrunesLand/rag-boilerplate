@@ -1,8 +1,3 @@
-"""Multi-query expansion (RAG Fusion) + Reciprocal Rank Fusion.
-
-Generate several paraphrases of the user's question so retrieval casts a wider,
-more robust net, then fuse the per-variant result lists into one ranking."""
-
 import config
 
 _VARIANTS_PROMPT = (
