@@ -1,6 +1,18 @@
 # Modular RAG Template
 
-A reusable Retrieval Augmentation Generation (RAG) Architecture template complete with MLOps capabilities with LangChain. As businesses continue to take further interest in the deployment of Large Language Models (LLMs) in their business practices, there is a surging need for quick and quality deployment of such project. The aim of this repository is to provide organizations with a template of an end-to-end chatbot with interchangable components as according to technical requirements.
+A reusable Retrieval Augmentation Generation (RAG) Architecture template complete with MLOps capabilities with LangChain. As businesses continue to take further interest in the deployment of Large Language Models (LLMs) in their business practices, there is a surging need for quick and quality deployment of such project. The aim of this repository is to provide organizations with a template of an end-to-end question and answer chatbot with interchangable components as according to technical requirements.
+
+## Contents
+
+- [Quickstart](#quickstart)
+- [Manual setup](#manual-setup)
+- [Swapping providers](#swapping-providers)
+- [Architecture overview](#architecture-overview)
+- [Configuration](#configuration)
+  - [Key settings](#key-settings)
+- [Make targets](#make-targets)
+- [References](#references)
+- [License](#license)
 
 ## Quickstart
 
@@ -128,6 +140,14 @@ change how the project runs. Secrets (API keys, connection strings) stay out of
 ## Make targets
 
 `make setup` · `make ingest` · `make chat` · `make ui` · `make eval` · `make clean`
+
+## References
+
+This project draws on the following surveys on Retrieval-Augmented Generation (RAG):
+
+- Gao, Y., Xiong, Y., Gao, X., Jia, K., Pan, J., Bi, Y., Dai, Y., Sun, J., & Wang, H. (2023). *Retrieval-Augmented Generation for Large Language Models: A Survey*. arXiv:2312.10997. https://arxiv.org/abs/2312.10997
+
+- Gao, Y., Xiong, Y., Wang, M., & Wang, H. (2024). *Modular RAG: Transforming RAG Systems into LEGO-like Reconfigurable Frameworks*. arXiv:2407.21059. https://arxiv.org/abs/2407.21059
 
 ## License
 
