@@ -36,6 +36,9 @@ def _rerank(query, docs, top_n):
         return docs[:top_n]
     model = _get_reranker()
     scored = model.predict([(query, d.page_content) for d in docs])
+    # Nothing clears the relevance floor -> no real match; report no context.
+    if max(scored) < config.RERANK_MIN_SCORE:
+        return []
     ranked = [d for _, d in sorted(zip(scored, docs), key=lambda x: x[0], reverse=True)]
     return ranked[:top_n]
 

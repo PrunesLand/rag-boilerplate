@@ -36,7 +36,7 @@ are described below.
    - *Local (default)* — install [Ollama](https://ollama.com) and pull the
      models named in your config:
      ```bash
-     ollama pull qwen2.5:0.5b-instruct
+     ollama pull qwen3:0.6b
      ollama pull nomic-embed-text
      ```
    - *Cloud* — obtain an API key for your chosen provider (e.g. OpenAI,
@@ -79,7 +79,7 @@ your provider before installing, or install it directly.
 
 | Provider | Configuration |
 |----------|---------------|
-| Ollama | `LLM_PROVIDER=ollama`, `LLM_MODEL=qwen2.5:0.5b-instruct` |
+| Ollama | `LLM_PROVIDER=ollama`, `LLM_MODEL=qwen3:0.6b` |
 | OpenAI | `LLM_PROVIDER=openai`, `LLM_MODEL=gpt-4o-mini`, `OPENAI_API_KEY=…` |
 | Anthropic | `LLM_PROVIDER=anthropic`, `LLM_MODEL=claude-…`, `ANTHROPIC_API_KEY=…` |
 
@@ -132,10 +132,14 @@ change how the project runs. Secrets (API keys, connection strings) stay out of
 | `ORGANIZATION_NAME` | Organization the assistant represents | `Your Organization` |
 | `ASSISTANT_DESCRIPTION` | Persona line in the system prompt | derived from name |
 | `LLM_PROVIDER` / `EMBEDDING_PROVIDER` / `VECTORSTORE_PROVIDER` | Engines | `ollama` / `ollama` / `chroma` |
-| `LLM_MODEL` / `EMBEDDING_MODEL` | Model names | `qwen2.5:0.5b-instruct` / `nomic-embed-text` |
+| `LLM_MODEL` / `EMBEDDING_MODEL` | Model names | `qwen3:0.6b` / `nomic-embed-text` |
 | `USE_HYBRID_SEARCH` / `USE_RERANKER` / `USE_MULTI_QUERY` / `USE_REVERSE_HYDE` | Feature toggles | `true` |
+| `USE_QUERY_ROUTER` | Answer small talk directly, without retrieval | `true` |
 | `USE_CRAG` | Self-grading (requires a 7B+ or cloud model) | `false` |
-| `CRAWL_MAX_DEPTH` / `RESPECT_ROBOTS_TXT` | Crawl scope and politeness | `1` / `true` |
+| `RERANK_MIN_SCORE` | Cross-encoder relevance floor; below it the bot says it doesn't know | `-5.0` |
+| `CRAWL_SOURCE` | Page fetching backend: `live` BFS crawl or `commoncrawl` archive | `live` |
+| `CRAWL_MAX_DEPTH` / `RESPECT_ROBOTS_TXT` | Live-crawl scope and politeness | `1` / `true` |
+| `CC_RECENT_CRAWLS` / `CC_LIMIT_PER_PATTERN` | Common Crawl snapshot span and per-pattern page cap | `1` / `50` |
 
 ## Make targets
 

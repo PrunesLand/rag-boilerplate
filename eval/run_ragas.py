@@ -35,9 +35,29 @@ def _collect():
     return rows
 
 
+def _patch_ragas_import():
+    """Make ragas 0.4.3 importable on langchain-community 0.4.x.
+
+    ragas hard-imports the removed langchain_community...vertexai module (we never
+    use Vertex AI). Register a placeholder so the import resolves; delete once fixed.
+    """
+    import sys
+    import types
+
+    missing = "langchain_community.chat_models.vertexai"
+    if missing not in sys.modules:
+        try:
+            __import__(missing)
+        except ModuleNotFoundError:
+            placeholder = types.ModuleType(missing)
+            placeholder.ChatVertexAI = type("ChatVertexAI", (), {})
+            sys.modules[missing] = placeholder
+
+
 def main():
     rows = _collect()
     try:
+        _patch_ragas_import()
         from datasets import Dataset
         from langchain_ollama import ChatOllama, OllamaEmbeddings
         from ragas import evaluate
